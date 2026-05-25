@@ -4,7 +4,7 @@ const projectRepository = [
         title: "BU Polangui Interactive Navigation System",
         shortDesc: "Developed the BU Polangui Interactive Navigation System, a mobile-based campus navigation and communication platform featuring a 3D campus map, avatar-guided navigation, and real-time announcements using React Native, Node.js, and MongoDB.",
         fullDesc: "Developed the BU Polangui Interactive Navigation System, a mobile-based campus navigation and communication platform featuring a 3D campus map, avatar-guided navigation, and real-time announcements.\n\nThis framework streamlines onboarding workflows for incoming students and university guests alike. It integrates high-fidelity spatial asset structures mapped into real-time render nodes over modern lightweight state controls.",
-        image: "assets/images/gallery/JETHLEE.jpg", //PICTURE TROY, botang mo sa assets/images
+        image: "assets/images/bup.png", 
         stack: "PHP / MySQL"
     },
     {
@@ -12,7 +12,7 @@ const projectRepository = [
         title: "ProcureEase",
         shortDesc: "Developed ProcureEase, a subscription-based procurement management platform designed to streamline transactions between government agencies and accredited suppliers for office supplies, equipment, and other government-related resources.",
         fullDesc: "Developed ProcureEase, a subscription-based procurement management platform designed to streamline transactions between government agencies and accredited suppliers for office supplies, equipment, and other government-related resources.\n\nFeatures secure transactional authentication matrices, real-time dynamic inventory audits, automated supply pipeline fulfillment alerts, and direct relational record keeping.",
-        image: "assets/images/gallery/JETHCHAN.jpg", //PICTURE TROY
+        image: "assets/images/pro.png", 
         stack: "PHP"
     }
 ];
