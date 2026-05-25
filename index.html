@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jeth Roy | Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
     <script>
         tailwind.config = {
             theme: {
@@ -26,8 +28,6 @@
             }
         } 
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="bg-surface text-slate-100 font-sans antialiased selection:bg-brand/30 selection:text-white">
 
@@ -129,42 +129,13 @@
             <section class="bg-panel border border-element rounded-2xl p-6 md:p-8">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xs uppercase tracking-widest text-brandLight font-mono font-bold">Featured Projects</h2>
-                    <a href="#" class="text-[11px] font-mono text-textMuted hover:text-white flex items-center gap-1 transition">
+                    <button id="viewAllProjectsBtn" class="text-[11px] font-mono text-textMuted hover:text-white flex items-center gap-1 transition">
                         View →
-                    </a>
+                    </button>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-surface/40 border border-element hover:border-line rounded-xl p-5 flex flex-col justify-between group transition-all duration-300">
-                        <div>
-                            <div class="flex justify-between items-start gap-2 mb-2">
-                                <h3 class="font-bold text-sm text-white group-hover:text-brandLight transition">BU Polangui Interactive Navigation System</h3>
-                            </div>
-                            <p class="text-xs text-textMuted leading-relaxed mb-4">
-                                Developed the BU Polangui Interactive Navigation System, a mobile-based campus navigation and communication platform featuring a 3D campus map, avatar-guided navigation, and real-time announcements using React Native, Node.js, and MongoDB.
-                            </p>
-                        </div>
-                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-element">
-                            <span class="text-[10px] font-mono text-slate-500">PHP / MySQL</span>
-                            <span class="text-xs text-white opacity-0 group-hover:opacity-100 transition duration-300">→</span>
-                        </div>
+                <div id="mainProjectGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     </div>
-
-                    <div class="bg-surface/40 border border-element hover:border-line rounded-xl p-5 flex flex-col justify-between group transition-all duration-300">
-                        <div>
-                            <div class="flex justify-between items-start gap-2 mb-2">
-                                <h3 class="font-bold text-sm text-white group-hover:text-brandLight transition">ProcureEase</h3>
-                            </div>
-                            <p class="text-xs text-textMuted leading-relaxed mb-4">
-                                Developed ProcureEase, a subscription-based procurement management platform designed to streamline transactions between government agencies and accredited suppliers for office supplies, equipment, and other government-related resources.
-                            </p>
-                        </div>
-                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-element">
-                            <span class="text-[10px] font-mono text-slate-500">PHP</span>
-                            <span class="text-xs text-white opacity-0 group-hover:opacity-100 transition duration-300">→</span>
-                        </div>
-                    </div>
-                </div>
             </section>
 
             <section class="bg-panel border border-element rounded-2xl p-6 md:p-8">
@@ -228,6 +199,38 @@
             </section>
 
         </main>
+    </div>
+
+    <div id="allProjectsModal" class="fixed inset-0 bg-surface/90 backdrop-blur-md z-50 invisible opacity-0 transition-all duration-300 flex items-center justify-center p-4">
+        <div class="bg-panel border border-element rounded-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col shadow-2xl">
+            <div class="p-6 border-b border-element flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Project Directory Index</h2>
+                    <p class="text-xs text-textMuted font-mono">Full Catalogue Matrix</p>
+                </div>
+                <button id="closeAllProjectsBtn" class="text-slate-400 hover:text-white bg-element hover:bg-line w-8 h-8 rounded-full flex items-center justify-center transition">&times;</button>
+            </div>
+            <div id="modalProjectsGrid" class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+        </div>
+    </div>
+
+    <div id="detailProjectModal" class="fixed inset-0 bg-surface/95 backdrop-blur-md z-[60] invisible opacity-0 transition-all duration-300 flex items-center justify-center p-4">
+        <div class="bg-panel border border-element rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+            <div class="p-6 border-b border-element flex justify-between items-center shrink-0">
+                <span class="text-[10px] font-mono tracking-widest uppercase text-brandLight" id="modalProjStack">Stack Metadata</span>
+                <button id="closeDetailProjectBtn" class="text-slate-400 hover:text-white bg-element hover:bg-line w-8 h-8 rounded-full flex items-center justify-center transition">&times;</button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="w-full aspect-video rounded-xl bg-surface border border-line overflow-hidden">
+                    <img id="modalProjImage" src="" alt="Project Presentation Screen" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white" id="modalProjTitle">Project Name Title</h3>
+                    <p class="text-sm text-textMuted mt-3 leading-relaxed whitespace-pre-line" id="modalProjDesc">Project description goes here.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="assets/js/main.js"></script>
