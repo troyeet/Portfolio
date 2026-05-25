@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeth Roy | Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        surface: '#090a0f',
+                        panel: '#12141c',
+                        element: '#1e2230',
+                        line: '#2d334a',
+                        textMuted: '#94a3b8',
+                        brand: '#6366f1',
+                        brandLight: '#818cf8'
+                    }
+                }
+            }
+        } 
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-surface text-slate-100 font-sans antialiased selection:bg-brand/30 selection:text-white">
+
+    <div class="max-w-7xl mx-auto min-h-screen px-4 py-8 md:px-8 lg:py-12 flex flex-col lg:flex-row gap-8 lg:gap-12">
+        
+        <aside class="w-full lg:w-[360px] lg:shrink-0 lg:sticky lg:top-12 lg:h-[calc(100vh-6rem)] flex flex-col justify-between gap-8">
+            <div class="bg-panel border border-element rounded-2xl p-6 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand/10 rounded-full -mr-8 -mt-8 blur-2xl transition-all duration-500 group-hover:bg-brand/20"></div>
+                
+                <div class="relative w-24 h-24 rounded-2xl overflow-hidden bg-element border border-line mb-6 shadow-inner">
+                    <img src="assets/images/jeth lee.jpg" alt="Jeth Roy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+
+                <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                    Jeth Roy Delos Santos
+                </h1>
+                <p class="text-xs text-brandLight font-mono mt-1 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Linao, Libon, Albay
+                </p>
+                
+                <div class="border-t border-element my-5"></div>
+                
+                <p class="text-sm text-textMuted leading-relaxed">
+                    Information Technology Student at <span class="text-white font-medium">Bicol University Polangui</span>.
+                </p>
+
+                <div class="mt-6 bg-surface/60 border border-element rounded-xl p-4 font-mono text-[11px] text-textMuted space-y-1.5">
+                    <div class="flex justify-between"><span class="text-slate-500">INSTITUTION:</span> <span class="text-white font-medium">BU POLANGUI</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">PROGRAM:</span> <span class="text-brandLight font-medium">BSIT</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">ROLE:</span> <span class="text-emerald-400 font-medium">STUDENT</span></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mt-6">
+                    <a href="mailto:jethroyEMAILMO@gmail.com" class="flex items-center justify-center gap-2 bg-element hover:bg-line border border-line text-white px-3 py-2.5 rounded-xl text-xs font-semibold transition-all duration-300">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Send Email
+                    </a>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex flex-col gap-4 p-2 font-mono text-[11px] text-slate-500">
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-brandLight flex items-center gap-1 transition">GitHub</a>
+                    <a href="https://www.facebook.com/jethroy.delossantos" class="hover:text-brandLight flex items-center gap-1 transition">Facebook</a>
+                </div>
+                <span>© 2026 Jeth Roy Delos Santos</span>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col gap-8">
+            
+            <section class="bg-panel border border-element rounded-2xl p-6 md:p-8">
+                <h2 class="text-xs uppercase tracking-widest text-brandLight font-mono font-bold mb-3">Overview</h2>
+                <div class="text-sm text-textMuted space-y-4 leading-relaxed">
+                    <p>
+                        Lorem yah
+                    </p>
+                    <p>
+                        lorem ipsum ni jeth lee
+                    </p>
+                </div>
+            </section>
+
+            <section class="bg-panel border border-element rounded-2xl p-6 md:p-8">
+                <div class="flex justify-between items-baseline mb-6">
+                    <h2 class="text-xs uppercase tracking-widest text-brandLight font-mono font-bold">Tech Stack</h2>
+                    <span class="text-[11px] font-mono text-slate-500">Stack</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-surface/50 border border-element rounded-xl p-4">
+                        <h3 class="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider mb-3">Frontend</h3>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">HTML5</span>
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">JavaScript</span>
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">Tailwind CSS</span>
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">CSS3</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface/50 border border-element rounded-xl p-4">
+                        <h3 class="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider mb-3">backend & Database</h3>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">PHP</span>
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">MySQL</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface/50 border border-element rounded-xl p-4">
+                        <h3 class="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider mb-3">Tools & Design</h3>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">VS Code</span>
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">GitHub</span>
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">Figma</span>
+                            <span class="bg-element border border-line text-white text-[11px] font-mono px-2.5 py-1 rounded-md transition hover:border-brand">Git</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-panel border border-element rounded-2xl p-6 md:p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xs uppercase tracking-widest text-brandLight font-mono font-bold">Featured Projects</h2>
+                    <a href="#" class="text-[11px] font-mono text-textMuted hover:text-white flex items-center gap-1 transition">
+                        View →
+                    </a>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-surface/40 border border-element hover:border-line rounded-xl p-5 flex flex-col justify-between group transition-all duration-300">
+                        <div>
+                            <div class="flex justify-between items-start gap-2 mb-2">
+                                <h3 class="font-bold text-sm text-white group-hover:text-brandLight transition">Title yah</h3>
+                            </div>
+                            <p class="text-xs text-textMuted leading-relaxed mb-4">
+                                about sa ginawa mo yah
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-element">
+                            <span class="text-[10px] font-mono text-slate-500">PHP / MySQL</span>
+                            <span class="text-xs text-white opacity-0 group-hover:opacity-100 transition duration-300">→</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface/40 border border-element hover:border-line rounded-xl p-5 flex flex-col justify-between group transition-all duration-300">
+                        <div>
+                            <div class="flex justify-between items-start gap-2 mb-2">
+                                <h3 class="font-bold text-sm text-white group-hover:text-brandLight transition">Title</h3>
+                            </div>
+                            <p class="text-xs text-textMuted leading-relaxed mb-4">
+                                magaling to yah, best seller po.
+                            </p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-element">
+                            <span class="text-[10px] font-mono text-slate-500">PHP</span>
+                            <span class="text-xs text-white opacity-0 group-hover:opacity-100 transition duration-300">→</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-panel border border-element rounded-2xl p-6 md:p-8">
+                <h2 class="text-xs uppercase tracking-widest text-brandLight font-mono font-bold mb-6">Experience</h2>
+                
+                <div class="relative border-l border-element ml-3 pl-6 space-y-6">
+                    
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full bg-brand group-hover:scale-125 transition-all duration-300 ring-4 ring-surface"></div>
+                        <div class="flex justify-between items-baseline flex-wrap gap-2">
+                            <h3 class="text-xs font-mono font-bold text-white">1st Place - Pabilisan kumain ng pastil</h3>
+                            <span class="text-[10px] font-mono text-brandLight bg-brand/10 px-1.5 py-0.5 rounded">2026</span>
+                        </div>
+                        <p class="text-xs text-textMuted mt-1">Awarded at the Polangui Night Market.</p>
+                    </div>
+
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full bg-brand group-hover:scale-125 transition-all duration-300 ring-4 ring-surface"></div>
+                        <div class="flex justify-between items-baseline flex-wrap gap-2">
+                            <h3 class="text-xs font-mono font-bold text-white">Riding in tandem</h3>
+                            <span class="text-[10px] font-mono text-brandLight bg-brand/10 px-1.5 py-0.5 rounded">2025</span>
+                        </div>
+                        <p class="text-xs text-textMuted mt-1">Nag drive 24hrs na walang tigil</p>
+                    </div>
+
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full bg-slate-600 group-hover:scale-125 transition-all duration-300 ring-4 ring-surface"></div>
+                        <div class="flex justify-between items-baseline flex-wrap gap-2">
+                            <h3 class="text-xs font-mono font-bold text-white">3x a day</h3>
+                            <span class="text-[10px] font-mono text-slate-500 bg-element px-1.5 py-0.5 rounded">2024</span>
+                        </div>
+                        <p class="text-xs text-textMuted mt-1">mag salsala ko</p>
+                    </div>
+
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full bg-slate-600 group-hover:scale-125 transition-all duration-300 ring-4 ring-surface"></div>
+                        <div class="flex justify-between items-baseline flex-wrap gap-2">
+                            <h3 class="text-xs font-mono font-bold text-white">BS Information Technology</h3>
+                            <span class="text-[10px] font-mono text-slate-500 bg-element px-1.5 py-0.5 rounded">2022</span>
+                        </div>
+                        <p class="text-xs text-textMuted mt-1">Initiated Bachelor of Science in Information Technology at Bicol University Polangui.</p>
+                    </div>
+
+
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] top-1 w-2.5 h-2.5 rounded-full bg-slate-600 group-hover:scale-125 transition-all duration-300 ring-4 ring-surface"></div>
+                        <div class="flex justify-between items-baseline flex-wrap gap-2">
+                            <h3 class="text-xs font-mono font-bold text-white">Hello, Guys!</h3>
+                            <span class="text-[10px] font-mono text-slate-500 bg-element px-1.5 py-0.5 rounded">2018</span>
+                        </div>
+                        <p class="text-xs text-textMuted mt-1">First line of code sa comlab ni sir olloroso</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="bg-panel border border-element rounded-2xl p-6 md:p-8">
+                <h2 class="text-xs uppercase tracking-widest text-brandLight font-mono font-bold mb-4">Gallery</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div class="aspect-video bg-surface border border-element rounded-xl overflow-hidden relative group">
+                        <img src="assets/images/gallery/image1.jpg" alt="Captured view" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-60"></div>
+                    </div>
+                    <div class="aspect-video bg-surface border border-element rounded-xl overflow-hidden relative group">
+                        <img src="assets/images/gallery/image2.jpg" alt="Captured view" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-60"></div>
+                    </div>
+                    <div class="aspect-video bg-surface border border-element rounded-xl overflow-hidden relative group col-span-2 md:col-span-1">
+                        <img src="assets/images/gallery/image3.jpg" alt="Captured view" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-60"></div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
