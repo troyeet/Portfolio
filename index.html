@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jeth Roy L. Delos Santos — full-stack developer and 3D modeler</title>
+<meta name="description" content="Full-stack developer and 3D modeler from the Philippines. React, PHP and MySQL on the web, Blender for environments. Walk through The Grand Arena, running live in your browser.">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2317191C'/%3E%3Cpath d='M16 17V7' stroke='%238AA85E' stroke-width='2.5'/%3E%3Cpath d='M16 17l-8 5' stroke='%23C2554E' stroke-width='2.5'/%3E%3Cpath d='M16 17l8 5' stroke='%234E86B8' stroke-width='2.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,300..800;1,62..125,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="topbar__id" href="#main">
+    <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 13V4"/><path d="m12 13-7.5 4.4"/><path d="m12 13 7.5 4.4"/>
+    </svg>
+    <span class="topbar__name">Jeth Roy L. Delos Santos</span>
+  </a>
+
+  <nav class="tabs" aria-label="Sections">
+    <a href="#work" class="tab">Work</a>
+    <a href="#models" class="tab">Models</a>
+    <a href="#make" class="tab">What I make</a>
+    <a href="#skills" class="tab">Skills</a>
+    <a href="#background" class="tab">Background</a>
+    <a href="#contact" class="tab">Contact</a>
+  </nav>
+
+  <p class="topbar__status"><span class="dot" aria-hidden="true"></span>Available for work</p>
+</header>
+
+<main id="main">
+
+  <!-- ── hero viewport ───────────────────────────────────────────── -->
+  <section class="stage" aria-labelledby="hero-name">
+    <canvas id="viewport" class="stage__canvas" tabindex="0"
+            aria-label="The Grand Arena in three dimensions. Drag or press the arrow keys to orbit, plus and minus to move closer, 1 to 8 for the camera presets, T to play the tour."></canvas>
+    <div class="stage__scrim" aria-hidden="true"></div>
+
+    <div class="hero">
+      <h1 id="hero-name" class="hero__h">
+        <span class="hero__who">Jeth Roy L. Delos Santos, full-stack developer and 3D modeler</span>
+        <span class="hero__claim">Let's build something together.</span>
+      </h1>
+      <p class="hero__meta">You are looking at one of my models, running live in your browser — 50,096 triangles, no 3D library anywhere. Drag it, step inside, then tell me what you need built.</p>
+      <p class="hero__actions">
+        <a class="btn" href="#work">See the work</a>
+        <a class="btn btn--quiet" href="mailto:jethroyd@gmail.com">Email me</a>
+      </p>
+    </div>
+
+    <div class="views" id="views">
+      <div class="views__head">
+        <p class="views__now" id="view-name">Establishing</p>
+        <p class="views__note" id="view-note">The whole envelope, three-quarter, from above the approach.</p>
+      </div>
+
+      <div class="views__grp" role="group" aria-label="Exterior cameras">
+        <p class="views__lab">Outside</p>
+        <button type="button" class="view is-on" data-view="0" aria-pressed="true"><b>1</b>Establishing</button>
+        <button type="button" class="view" data-view="1" aria-pressed="false"><b>2</b>Facade</button>
+        <button type="button" class="view" data-view="2" aria-pressed="false"><b>3</b>Roof plan</button>
+      </div>
+
+      <div class="views__grp" role="group" aria-label="Interior cameras">
+        <p class="views__lab">Inside</p>
+        <button type="button" class="view" data-view="3" aria-pressed="false"><b>4</b>Centre spot</button>
+        <button type="button" class="view" data-view="4" aria-pressed="false"><b>5</b>The stand</button>
+        <button type="button" class="view" data-view="5" aria-pressed="false"><b>6</b>Upper tier</button>
+        <button type="button" class="view" data-view="6" aria-pressed="false"><b>7</b>Stair run</button>
+        <button type="button" class="view" data-view="7" aria-pressed="false"><b>8</b>Roof canopy</button>
+      </div>
+
+      <div class="views__foot">
+        <button type="button" class="view view--go" id="tour" aria-pressed="false"
+                data-play="Play tour" data-stop="Stop tour">Play tour</button>
+        <button type="button" class="view view--alt" id="clay" aria-pressed="false">Clay</button>
+      </div>
+    </div>
+
+    <p class="hud hud--hint" id="orbit-hint">Drag to orbit</p>
+
+    <div class="stage__load" id="stage-load" aria-hidden="true">
+      <p class="stage__load-t">grand-arena.glb <span class="num" id="load-pct">0%</span></p>
+      <div class="stage__load-bar"><span></span></div>
+    </div>
+
+    <p class="stage__note" id="stage-note" hidden></p>
+
+    <div class="hud hud--bl" aria-hidden="true">
+      <dl class="stats">
+        <dt>verts</dt><dd class="num" id="stat-verts">—</dd>
+        <dt>tris</dt><dd class="num" id="stat-tris">—</dd>
+        <dt>objects</dt><dd class="num" id="stat-objs">—</dd>
+        <dt>draw</dt><dd class="num" id="stat-draw">—</dd>
+        <dt>view</dt><dd class="num" id="stat-res">—</dd>
+      </dl>
+    </div>
+
+    <canvas id="gizmo" class="hud hud--br" width="132" height="132" aria-hidden="true"></canvas>
+  </section>
+
+  <!-- ── the work ────────────────────────────────────────────────── -->
+  <section id="work" class="band">
+    <div class="wrap">
+      <header class="head">
+        <h2>The Grand Arena</h2>
+        <p class="lead">The building at the top of this page. Have a look around it first — the reading can wait.</p>
+      </header>
+
+      <div class="case">
+        <div class="case__text">
+          <p class="case__lede">A full arena, built in Blender: the bowl, the seating, the stairs, and the roof over the top of it. You can circle it from outside, then drop down onto the pitch and look straight back up.</p>
+          <p>Most 3D you see on a website is really a video of a model, or a photo of one. This is the actual model, and it is running on your machine right now — which is why you can point the camera wherever you like instead of watching where someone else pointed it.</p>
+          <p>Start with the inside cameras. The stair run is my favourite one.</p>
+
+          <p class="case__jump">Take the camera in:
+            <button type="button" class="chip" data-goto="centre">Centre spot</button>
+            <button type="button" class="chip" data-goto="stair">Stair run</button>
+            <button type="button" class="chip" data-goto="canopy">Roof canopy</button>
+          </p>
+        </div>
+
+        <dl class="case__facts">
+          <div><dt>Triangles</dt><dd class="num">50,096</dd></div>
+          <div><dt>Vertices</dt><dd class="num">94,048</dd></div>
+          <div><dt>Separate pieces</dt><dd class="num">1,504</dd></div>
+          <div><dt>Download size</dt><dd class="num">3.1 MB</dd></div>
+        </dl>
+      </div>
+
+      <p class="case__note">All 1,504 pieces are stitched together the moment the page loads, which is what keeps it smooth — even on a phone. Nothing here is pre-recorded: if it moves, your browser is drawing it right then.</p>
+
+      <div class="also">
+        <h3 class="also__h">Also built</h3>
+        <ul class="also__list">
+          <li class="also__item" data-channel="web">
+            <h4>BU Polangui Interactive Navigation System</h4>
+            <p>My capstone. A web system for finding your way around a university campus and pulling up information about what you find. Front end and back end both mine, from the interface down to the database.</p>
+            <p class="also__stack">React.js, JavaScript, HTML, CSS, PHP, MySQL</p>
+          </li>
+          <li class="also__item" data-channel="data">
+            <h4>Student Management System</h4>
+            <p>Records, accounts and the login behind them. Sign-up, authentication and user management on a MySQL back end, with an interface that holds together on a phone.</p>
+            <p class="also__stack">HTML, CSS, JavaScript, PHP, MySQL</p>
+          </li>
+          <li class="also__item" data-channel="model">
+            <h4>Android applications</h4>
+            <p>Native mobile work in Java: layouts, screen navigation, event handling and the standard device features. Built through the middle years of the degree, and the reason I am comfortable outside a browser.</p>
+            <p class="also__stack">Java, Android Studio</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── the shelf ───────────────────────────────────────────────────
+       One <li class="piece"> per model, and that is the only place a model
+       is declared. To add another: drop the .glb into model/, copy a whole
+       <li> block, and change the path in data-model plus the name and the
+       note. The numbers underneath are counted off the file itself, so
+       there is nothing to type and nothing to keep in sync — and script.js
+       needs no edit at all.
+
+       This band deliberately breaks the panel/void alternation and sits on
+       the darker --void: the frames inside it are the lightest thing on the
+       page, and that only reads if what surrounds them is dark. The two
+       clear bands of padding between here and #work do the separating. -->
+  <section id="models" class="band">
+    <div class="wrap">
+      <header class="head">
+        <h2>The models</h2>
+        <p class="lead">Every model opens two ways: a 3D view you can turn in your hands, and flat 2D drawings — plan, front and side — read straight off the same file.</p>
+      </header>
+
+      <ul class="shelf">
+        <li class="piece" data-channel="model" data-model="model/grand-arena.glb">
+          <div class="piece__frame">
+            <canvas class="piece__canvas" tabindex="0"
+                    aria-label="The Grand Arena. Drag or press the arrow keys to turn it."></canvas>
+
+            <p class="piece__state">Loading…</p>
+
+            <div class="piece__hud">
+              <div class="modes" role="group" aria-label="View">
+                <button type="button" class="mode is-on" data-mode="3d" aria-pressed="true">3D</button>
+                <span class="modes__lbl" aria-hidden="true">2D</span>
+                <button type="button" class="mode" data-mode="plan"  aria-pressed="false" aria-label="Two-dimensional plan view">Plan</button>
+                <button type="button" class="mode" data-mode="front" aria-pressed="false" aria-label="Two-dimensional front view">Front</button>
+                <button type="button" class="mode" data-mode="side"  aria-pressed="false" aria-label="Two-dimensional side view">Side</button>
+              </div>
+            </div>
+
+            <p class="piece__cap" aria-live="polite">Perspective — drag to turn it</p>
+          </div>
+
+          <div class="piece__meta">
+            <h3 class="piece__name">The Grand Arena</h3>
+            <p class="piece__note">The stadium from the top of this page. Turn it in 3D, or switch to 2D and read it flat — the same three drawings I set it out from.</p>
+            <dl class="piece__facts">
+              <div><dt>Triangles</dt><dd class="num" data-fact="tris">—</dd></div>
+              <div><dt>Pieces</dt><dd class="num" data-fact="parts">—</dd></div>
+              <div><dt>File</dt><dd class="num" data-fact="bytes">—</dd></div>
+            </dl>
+          </div>
+        </li>
+      </ul>
+
+      <p class="shelf__note">The 2D views are not pictures of the model — they are the model, drawn with the perspective switched off, so a straight line stays straight and you can measure one part against another.</p>
+    </div>
+  </section>
+
+  <!-- ── how the hero gets to you ────────────────────────────────── -->
+  <section id="pipeline" class="band band--panel">
+    <div class="wrap">
+      <header class="head">
+        <h2>From Blender to your browser</h2>
+        <p class="lead">How the arena got from my computer onto your screen. Five steps, no magic.</p>
+      </header>
+
+      <div class="graph" id="graph">
+        <svg class="graph__wires" aria-hidden="true"></svg>
+        <ol class="graph__nodes">
+          <li class="node" data-channel="model">
+            <h3 class="node__title">Model</h3>
+            <p class="node__body">I build the arena in Blender — bowl, seats, stairs, roof. Modelled so the camera can go inside it, not just circle the outside.</p>
+            <p class="node__out">Blender scene</p>
+          </li>
+          <li class="node" data-channel="model">
+            <h3 class="node__title">Export</h3>
+            <p class="node__body">Saved out as a .glb — the standard file for 3D on the web. One file holding the shapes, the colours and the lights together.</p>
+            <p class="node__out">grand-arena.glb, 3.1 MB</p>
+          </li>
+          <li class="node" data-channel="data">
+            <h3 class="node__title">Parse</h3>
+            <p class="node__body">Your browser opens that file and reads it back into a building: every piece, where it sits, and what it is made of.</p>
+            <p class="node__out">1,504 pieces</p>
+          </li>
+          <li class="node" data-channel="data">
+            <h3 class="node__title">Merge</h3>
+            <p class="node__body">Those pieces get stitched into one before anything is drawn. It is the step that keeps the page quick instead of crawling.</p>
+            <p class="node__out">One piece, not 1,504</p>
+          </li>
+          <li class="node" data-channel="web">
+            <h3 class="node__title">Draw</h3>
+            <p class="node__body">Painted onto the page, live. The moment you stop moving it, it stops working — so an open tab is not quietly eating your battery.</p>
+            <p class="node__out">What you are dragging</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── what I make ─────────────────────────────────────────────── -->
+  <section id="make" class="band">
+    <div class="wrap">
+      <header class="head">
+        <h2>What I make</h2>
+        <p class="lead">Two halves of one job. Most developers cannot model and most modelers cannot ship, and being able to do both is the only reason this page can show you a building instead of a screenshot of one.</p>
+      </header>
+
+      <div class="split">
+        <article class="channel" data-channel="web">
+          <h3>Web and application development</h3>
+          <p>Full-stack, in the ordinary sense: the interface someone actually touches, the PHP and MySQL sitting behind it, and the accounts, permissions and records in between. React where a project needs its state to stay honest, plain HTML, CSS and JavaScript where it does not. I have built campus navigation, student records, and the login systems underneath both.</p>
+          <ul class="caps">
+            <li>React.js, JavaScript, HTML and CSS</li>
+            <li>PHP and MySQL back ends</li>
+            <li>Login, authentication and user management</li>
+            <li>Database design and CRUD systems</li>
+            <li>Responsive interfaces, checked on a phone first</li>
+            <li>Android applications in Java</li>
+          </ul>
+        </article>
+
+        <article class="channel" data-channel="model">
+          <h3>3D and environments</h3>
+          <p>Blender. Buildings and the places around them, modelled to hold up when the camera goes close or goes inside — a different job from modelling for one hero render, and a much less forgiving one. Then getting the result out of Blender and onto the web at a size a phone will actually download, which is where the two halves meet.</p>
+          <ul class="caps">
+            <li>Architectural and hard-surface modeling</li>
+            <li>Stadiums, venues and large interiors</li>
+            <li>Interior and exterior camera work</li>
+            <li>glTF and GLB export for the web</li>
+            <li>Models sized to download, not just to render</li>
+            <li>Figma and Canva for layout and design</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── skills ──────────────────────────────────────────────────── -->
+  <section id="skills" class="band band--panel">
+    <div class="wrap">
+      <header class="head">
+        <h2>Skills</h2>
+        <p class="lead">What I have actually built things with, grouped the way I use it. No percentage bars — they have never meant anything to anyone.</p>
+      </header>
+
+      <div class="kit">
+        <div class="kit__grp" data-channel="web">
+          <h3 class="kit__h">Front end</h3>
+          <ul class="kit__list">
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>JavaScript</li>
+            <li>React.js</li>
+            <li>Responsive UI design</li>
+          </ul>
+        </div>
+
+        <div class="kit__grp" data-channel="data">
+          <h3 class="kit__h">Back end and data</h3>
+          <ul class="kit__list">
+            <li>PHP</li>
+            <li>MySQL</li>
+            <li>MongoDB</li>
+            <li>MS Access</li>
+            <li>Authentication and CRUD</li>
+          </ul>
+        </div>
+
+        <div class="kit__grp" data-channel="model">
+          <h3 class="kit__h">3D and design</h3>
+          <ul class="kit__list">
+            <li>Blender</li>
+            <li>glTF and GLB export</li>
+            <li>Environment and hard-surface modeling</li>
+            <li>Figma</li>
+            <li>Canva</li>
+          </ul>
+        </div>
+
+        <div class="kit__grp" data-channel="web">
+          <h3 class="kit__h">Languages and tools</h3>
+          <ul class="kit__list">
+            <li>Java</li>
+            <li>C++</li>
+            <li>Android Studio</li>
+            <li>VS Code, NetBeans, Eclipse</li>
+            <li>Git and GitHub</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="kit__note">The unglamorous half is covered too. Since 2019 I have worked in a computer shop, done IT support for a local government unit, and interned at Toyota Albay — so hardware and software troubleshooting, system setup and maintenance, printer and network faults, and Cisco Packet Tracer for the networking side are all things I have done for real people with real deadlines, not just in a lab.</p>
+    </div>
+  </section>
+
+  <!-- ── background ──────────────────────────────────────────────── -->
+  <section id="background" class="band">
+    <div class="wrap wrap--narrow">
+      <header class="head">
+        <h2>Background</h2>
+        <p class="lead">Bicol University Polangui, class of 2026.</p>
+      </header>
+      <div class="studio">
+        <div class="studio__text">
+          <p>I started with the hardware. Since 2019 I have been in and out of a computer shop — printing, laminating, laying out posters, and fixing whatever came through the door — which is where I learned that most technical problems are really somebody's deadline. IT support for a local government unit and an internship at Toyota Albay filled in the rest: setup, maintenance, and the network faults nobody wants to own.</p>
+          <p>Building came later and it went both directions at once. On the software side that meant a capstone navigation system in React and PHP, a student records system, and Android apps in Java. On the other side it meant Blender, and eventually The Grand Arena at the top of this page. I am at the start of my career and I would rather say so than pad it out — what I have is a degree I worked hard for, projects that actually run, and a real appetite for whatever the job needs me to learn next.</p>
+        </div>
+
+        <div class="studio__side">
+          <figure class="ident">
+            <img class="ident__img" src="img/jeth-delos-santos.jpg" width="400" height="500"
+                 alt="Jeth Roy L. Delos Santos" loading="lazy" decoding="async">
+            <figcaption class="ident__cap">Jeth Roy L. Delos Santos</figcaption>
+          </figure>
+
+          <dl class="specs">
+            <dt>Degree</dt><dd>BS Information Technology, Bicol University Polangui, <span class="num">2022–2026</span></dd>
+            <dt>Honours</dt><dd>Cum Laude, Dean's Lister</dd>
+            <dt>Certified</dt><dd>Cyber Resilience and AI Essentials, DICT <span class="num">2024</span>. Computer Hardware Servicing, LGS <span class="num">2020</span></dd>
+            <dt>Based</dt><dd>Libon, Albay, Philippines</dd>
+            <dt>Hours</dt><dd>Philippine Standard Time (<span class="num">UTC+8</span>)</dd>
+            <dt>Availability</dt><dd>Open to roles and to project work</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── contact ─────────────────────────────────────────────────── -->
+  <section id="contact" class="band band--end">
+    <div class="wrap wrap--narrow">
+      <h2 class="calling">Tell me what you're building.</h2>
+      <p class="calling__sub">A role, a project, or a question about how something on this page works. I answer everything, and quickly.</p>
+      <p class="calling__mail"><a class="mail" href="mailto:jethroyd@gmail.com">jethroyd@gmail.com</a></p>
+      <p class="calling__note">If it is project work, it helps to know what it is for, who sees it, and when it has to exist by. If it is a role, the job post is enough — I will come back with the parts of it I have already done.</p>
+
+      <a class="cv" href="resume/Jeth-Roy-Delos-Santos-Resume.pdf"
+         download="Jeth-Roy-Delos-Santos-Resume.pdf">
+        <svg class="cv__i" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 4v10.5"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M5 19h14"/>
+        </svg>
+        <span class="cv__t">Download my résumé
+          <span class="cv__s">Two pages — the whole thing on one file.</span>
+        </span>
+        <span class="cv__m num">PDF · 48 KB</span>
+      </a>
+
+      <ul class="elsewhere">
+        <li><a class="link" href="https://github.com/troyeet">GitHub</a></li>
+        <!-- LinkedIn: paste the profile URL into the href and delete these comment
+             markers to put the link back on the page. -->
+        <!-- <li><a class="link" href="">LinkedIn</a></li> -->
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="colophon">
+  <div class="wrap">
+    <dl class="colophon__list">
+      <dt>Type</dt><dd>Archivo and IBM Plex Mono</dd>
+      <dt>Renderer</dt><dd>Hand-written WebGL2, no libraries</dd>
+      <dt>Dependencies</dt><dd class="num">0</dd>
+      <dt>Hero</dt><dd>A 50,096-triangle .glb, parsed and merged in the browser</dd>
+    </dl>
+    <p class="colophon__rights">© <span class="num">2026</span> Jeth Roy L. Delos Santos</p>
+  </div>
+</footer>
+
+<noscript><style>.hud--hint,.stage__load,.views,.hud--bl,.hud--br{display:none}.topbar{background:var(--void);border-bottom-color:var(--rail)}</style></noscript>
+<script src="script.js"></script>
+</body>
+</html>

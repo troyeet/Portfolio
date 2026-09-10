@@ -1,0 +1,727 @@
+/* ===========================================================================
+   Jeth Roy L. Delos Santos — portfolio
+   Direction: "studio viewport". The page is dressed as a 3D application, and
+   the chrome carries real information rather than decoration: the stats read
+   the actual mesh, the camera rail is grouped the way the building is, and
+   the axis triad is a taxonomy (red = 3D, blue = web, green = data).
+   Amber (--select) is reserved for selection and focus. Never decorative.
+   =========================================================================== */
+
+:root{
+  /* surfaces — note the stage is LIGHTER than the chrome around it,
+     the way a real 3D viewport sits inside a darker application shell */
+  --void:      #17191C;
+  --void-2:    #1D2024;
+  --stage:     #24282C;
+  --stage-hi:  #2B3035;
+  --rail:      #31373D;
+
+  /* text */
+  --chrome:    #C9CED5;
+  --chrome-hi: #EDF0F3;
+  --dim:       #99A1AA;
+  --dimmer:    #79818B;
+
+  /* axis triad, graded down from the raw R/G/B of a viewport gizmo */
+  --ax-x:      #C2554E;
+  --ax-y:      #8AA85E;
+  --ax-z:      #6699C7;
+
+  /* reserved for selection and focus. never decorative. */
+  --select:    #E0A33E;
+
+  --sans: 'Archivo', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --bar: 44px;
+  --r: 3px;
+}
+
+[data-channel="model"]{ --ch: var(--ax-x); }
+[data-channel="web"]    { --ch: var(--ax-z); }
+[data-channel="data"]   { --ch: var(--ax-y); }
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{
+  scroll-behavior:smooth;
+  scroll-padding-top:calc(var(--bar) + 1rem);
+  scrollbar-color: var(--rail) var(--void);
+}
+body{
+  margin:0;
+  background:var(--void);
+  color:var(--chrome);
+  font-family:var(--sans);
+  font-size:1.0625rem;
+  line-height:1.62;
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+h1,h2,h3,h4,p,dl,dd,figure,ol,ul{ margin:0; }
+ul,ol{ padding:0; }
+img{ max-width:100%; }
+::selection{ background:var(--select); color:var(--void); }
+:focus-visible{ outline:2px solid var(--select); outline-offset:2px; }
+
+.num{ font-family:var(--mono); font-size:.94em; font-variant-numeric:tabular-nums; }
+
+.skip{
+  position:absolute; left:.5rem; top:-4rem; z-index:100;
+  background:var(--select); color:var(--void);
+  padding:.5rem .875rem; border-radius:var(--r);
+  font-size:.875rem; font-weight:600; text-decoration:none;
+  transition:top .15s ease;
+}
+.skip:focus{ top:.5rem; }
+
+/* ── application bar ──────────────────────────────────────────────────── */
+.topbar{
+  position:fixed; inset:0 0 auto 0; z-index:50;
+  height:var(--bar);
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center;
+  gap:1rem; padding:0 1rem;
+  background:var(--void);
+  border-bottom:1px solid var(--rail);
+}
+.topbar__id{
+  display:flex; align-items:center; gap:.5rem;
+  text-decoration:none; color:var(--chrome-hi);
+}
+.mark{ width:18px; height:18px; fill:none; stroke-width:1.9; stroke-linecap:round; flex:none; }
+.mark path:nth-child(1){ stroke:var(--ax-y); }
+.mark path:nth-child(2){ stroke:var(--ax-x); }
+.mark path:nth-child(3){ stroke:var(--ax-z); }
+.topbar__name{ font-size:.875rem; font-weight:600; font-stretch:106%; }
+
+.tabs{ display:flex; gap:.125rem; justify-self:center; }
+.tab{
+  padding:.3rem .7rem; border-radius:var(--r);
+  color:var(--dim); font-size:.8125rem; text-decoration:none;
+  white-space:nowrap; transition:color .12s ease, background-color .12s ease;
+}
+.tab:hover{ color:var(--chrome-hi); }
+.tab.is-current{ color:var(--chrome-hi); background:var(--stage); }
+
+.topbar__status{
+  display:flex; align-items:center; gap:.45rem;
+  font-size:.75rem; color:var(--dim); white-space:nowrap;
+}
+.dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--ax-y); box-shadow:0 0 0 3px rgba(138,168,94,.14);
+}
+
+/* ── hero viewport ────────────────────────────────────────────────────────
+   The model gets the whole screen. The bar floats over it rather than
+   pushing it down, so the first thing on the page is the building. */
+.stage{
+  position:relative;
+  height:100svh;
+  min-height:34rem;
+  background:var(--stage);
+  overflow:hidden;
+  border-bottom:1px solid var(--rail);
+}
+.topbar{ background:linear-gradient(to bottom, rgba(23,25,28,.92), rgba(23,25,28,.55) 70%, rgba(23,25,28,0)); border-bottom-color:transparent; backdrop-filter:blur(6px); transition:background-color .25s ease, border-color .25s ease; }
+.topbar.is-stuck{ background:var(--void); border-bottom-color:var(--rail); }
+.stage__canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+/* Only as much scrim as the text needs: a wash up the left for the headline
+   and a low band at the bottom for the readouts. The middle stays clear. */
+.stage__scrim{
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(97deg, rgba(23,25,28,.90) 0%, rgba(23,25,28,.58) 26%, rgba(23,25,28,0) 58%),
+    linear-gradient(to top, rgba(23,25,28,.66) 0%, rgba(23,25,28,0) 20%);
+}
+
+.hud{
+  position:absolute; z-index:2;
+  font-size:.6875rem; line-height:1.5; color:var(--dim);
+  pointer-events:none;
+}
+.hud--bl{ bottom:1rem; left:clamp(1.15rem, 5vw, 4.5rem); }
+.hud--br{ bottom:.75rem; right:.75rem; width:132px; height:132px; }
+.hud--hint{
+  left:50%; bottom:1.15rem; transform:translateX(-50%);
+  padding:.3rem .7rem;
+  background:rgba(20,22,25,.6); border-radius:100px;
+  color:var(--dimmer);
+  transition:opacity .5s ease;
+}
+.hud--hint.is-gone{ opacity:0; }
+.stage:not(.is-ready) .hud--hint{ opacity:0; }
+
+/* ── camera rail ──────────────────────────────────────────────────────────
+   A shading panel, not a set of website buttons. It is grouped the way the
+   building is (outside / inside), each camera keeps the number that also
+   works as a keyboard shortcut, and the amber marker that says "this is the
+   live one" is the same amber used for selection everywhere else. */
+.views{
+  position:absolute; z-index:4;
+  top:calc(var(--bar) + .9rem); right:.9rem;
+  width:13.75rem;
+  max-height:calc(100svh - var(--bar) - 2rem);
+  overflow-y:auto;
+  padding:.7rem;
+  background:rgba(20,22,25,.72);
+  backdrop-filter:blur(9px);
+  border:1px solid var(--rail); border-radius:var(--r);
+  transition:opacity .45s ease;
+}
+.views__head{ padding:.1rem .25rem .7rem; border-bottom:1px solid var(--rail); }
+.views__now{ font-size:.875rem; font-weight:600; color:var(--chrome-hi); line-height:1.25; }
+.views__note{ margin-top:.3rem; font-size:.6875rem; line-height:1.45; color:var(--dim); }
+.views__grp{ display:flex; flex-direction:column; gap:1px; padding-top:.6rem; }
+.views__lab{
+  padding:0 .25rem .3rem;
+  font-family:var(--mono); font-size:.625rem; color:var(--dimmer);
+}
+.view{
+  display:flex; align-items:center; gap:.55rem;
+  width:100%; padding:.36rem .5rem;
+  background:transparent;
+  border:0; border-radius:2px;
+  box-shadow:inset 2px 0 0 transparent;
+  color:var(--dim);
+  font-family:var(--sans); font-size:.75rem; line-height:1.35;
+  text-align:left; white-space:nowrap; cursor:pointer;
+  transition:color .12s ease, background-color .12s ease, box-shadow .12s ease;
+}
+.view b{
+  flex:none; width:1.1ch;
+  font-family:var(--mono); font-size:.6875rem; font-weight:400;
+  color:var(--dimmer);
+  transition:color .12s ease;
+}
+.view:hover{ color:var(--chrome-hi); background:var(--stage-hi); }
+.view:hover b{ color:var(--dim); }
+.view.is-on{
+  color:var(--chrome-hi); background:var(--stage-hi);
+  box-shadow:inset 2px 0 0 var(--select);
+}
+.view.is-on b{ color:var(--select); }
+
+.views__foot{ display:flex; gap:.35rem; margin-top:.7rem; padding-top:.6rem; border-top:1px solid var(--rail); }
+.views__foot .view{ width:auto; justify-content:center; padding:.36rem .55rem; box-shadow:none; }
+.view--go{
+  flex:1;
+  border:1px solid var(--rail);
+  font-family:var(--mono); font-size:.6875rem; color:var(--chrome);
+}
+.view--go.is-on{ background:var(--stage-hi); border-color:var(--select); color:var(--chrome-hi); box-shadow:none; }
+.view--alt{ gap:.42rem; font-family:var(--mono); font-size:.6875rem; border:1px solid var(--rail); }
+.view--alt::before{
+  content:""; width:7px; height:7px; flex:none;
+  border:1px solid var(--dimmer); border-radius:1px;
+}
+.view--alt.is-on{ background:var(--stage-hi); box-shadow:none; }
+.view--alt.is-on::before{ background:var(--select); border-color:var(--select); }
+.stage:not(.is-ready) .views{ opacity:0; pointer-events:none; }
+
+.stage__load{
+  position:absolute; z-index:4;
+  top:calc(var(--bar) + 1.6rem); right:.9rem;
+  width:13.75rem;
+  transition:opacity .4s ease;
+}
+.stage__load.is-done{ opacity:0; }
+.stage__load-t{
+  display:flex; justify-content:space-between; gap:1rem;
+  margin-bottom:.4rem;
+  font-family:var(--mono); font-size:.6875rem; color:var(--dimmer);
+}
+.stage__load-bar{ height:2px; background:var(--rail); overflow:hidden; }
+.stage__load-bar span{
+  display:block; height:100%; width:100%;
+  background:var(--select);
+  transform:scaleX(var(--p, 0)); transform-origin:0 50%;
+  transition:transform .2s linear;
+}
+
+/* nothing loaded: drop the chrome that would be describing a model */
+.stage.is-static .views,
+.stage.is-static .hud--bl,
+.stage.is-static .hud--br{ display:none; }
+.stage__note{
+  position:absolute; z-index:4;
+  top:clamp(4.5rem, 16vh, 9rem); right:clamp(1.15rem, 5vw, 4.5rem);
+  max-width:26rem;
+  font-family:var(--mono); font-size:.8125rem; line-height:1.6;
+  color:var(--dim);
+  border-left:2px solid var(--ax-x); padding-left:.9rem;
+}
+.stage__note[hidden]{ display:none; }
+
+.stats{ display:flex; flex-wrap:wrap; align-items:baseline; gap:.3rem; }
+.stats dt{ color:var(--dimmer); }
+.stats dd{ color:var(--chrome); margin-right:1.15rem; font-size:.75rem; }
+.stats dd:last-child{ margin-right:0; }
+
+.hero{
+  position:absolute; z-index:3;
+  left:clamp(1.15rem, 5vw, 4.5rem);
+  bottom:clamp(4rem, 13vh, 8.5rem);
+  width:min(35rem, 78vw);
+}
+.hero__h{ display:block; font-weight:400; }
+.hero__who{
+  display:block;
+  font-size:.9375rem; font-weight:600; font-stretch:106%;
+  color:var(--chrome-hi);
+  margin-bottom:1.1rem;
+}
+.hero__claim{
+  display:block;
+  font-size:clamp(1.85rem, 4vw, 3.15rem);
+  font-weight:500; font-stretch:100%;
+  line-height:1.08; letter-spacing:-.017em;
+  color:var(--chrome-hi);
+  max-width:21ch;
+  text-wrap:balance;
+}
+.hero__meta{
+  margin-top:1.25rem;
+  max-width:40ch;
+  font-size:.9375rem;
+  color:var(--dim);
+}
+.hero__actions{ display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1.75rem; }
+
+.btn{
+  display:inline-block; padding:.62rem 1.15rem; border-radius:var(--r);
+  font-size:.875rem; font-weight:500; text-decoration:none;
+  background:var(--chrome-hi); color:var(--void);
+  border:1px solid var(--chrome-hi);
+  transition:background-color .12s ease, border-color .12s ease, color .12s ease;
+}
+.btn:hover{ background:#fff; border-color:#fff; }
+.btn--quiet{ background:transparent; color:var(--chrome); border-color:var(--rail); }
+.btn--quiet:hover{ background:transparent; color:var(--chrome-hi); border-color:var(--chrome); }
+
+/* ── page bands ───────────────────────────────────────────────────────── */
+.band{ padding:clamp(4.25rem, 8.5vw, 7.5rem) 0; }
+.band--panel{ background:var(--void-2); border-block:1px solid var(--rail); }
+.band--end{ padding-bottom:clamp(5rem, 10vw, 9rem); border-top:1px solid var(--rail); }
+
+.wrap{ width:min(76rem, calc(100% - 2.5rem)); margin-inline:auto; }
+.wrap--narrow{ width:min(56rem, calc(100% - 2.5rem)); }
+
+.head{ max-width:46rem; margin-bottom:clamp(2.25rem, 4.5vw, 3.75rem); }
+h2{
+  font-size:clamp(1.5rem, 2.6vw, 2.125rem);
+  font-weight:600; font-stretch:104%;
+  letter-spacing:-.012em; line-height:1.15;
+  color:var(--chrome-hi);
+}
+.lead{ margin-top:.85rem; max-width:58ch; color:var(--dim); }
+
+/* ── two channels ─────────────────────────────────────────────────────── */
+.split{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem, 5vw, 5rem); }
+.channel{ border-top:2px solid var(--ch); padding-top:1.15rem; }
+.channel h3{ font-size:1.1875rem; font-weight:600; color:var(--chrome-hi); }
+.channel > p{ margin-top:.7rem; max-width:48ch; color:var(--dim); font-size:1rem; }
+.caps{ list-style:none; margin-top:1.6rem; border-top:1px solid var(--rail); }
+.caps li{
+  padding:.62rem 0; border-bottom:1px solid var(--rail);
+  font-size:.9375rem; color:var(--chrome);
+}
+
+/* ── the one project ──────────────────────────────────────────────────────
+   No screenshot here on purpose. The render is at the top of the page and it
+   is live, so this section is the text and the numbers behind it, with the
+   chips wired straight back up to the cameras. */
+.case{ display:grid; grid-template-columns:1fr 17.5rem; gap:clamp(2rem, 5vw, 4.5rem); align-items:start; }
+.case__lede{ font-size:clamp(1.0625rem, 1.6vw, 1.25rem); line-height:1.55; color:var(--chrome); max-width:52ch; }
+.case__text > p + p{ margin-top:1.1rem; }
+.case__text > p{ max-width:60ch; color:var(--dim); }
+
+.case__jump{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.45rem;
+  margin-top:1.9rem; padding-top:1.4rem;
+  border-top:1px solid var(--rail);
+  font-size:.875rem; color:var(--dimmer);
+}
+.chip{
+  padding:.34rem .7rem;
+  background:var(--stage); border:1px solid var(--rail); border-radius:100px;
+  color:var(--chrome); font-family:var(--mono); font-size:.75rem;
+  cursor:pointer;
+  transition:color .12s ease, background-color .12s ease, border-color .12s ease;
+}
+.chip:hover{ color:var(--void); background:var(--select); border-color:var(--select); }
+
+.case__facts{ border-top:1px solid var(--rail); }
+.case__facts > div{
+  display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
+  padding:.6rem 0; border-bottom:1px solid var(--rail);
+}
+.case__facts dt{ font-size:.8125rem; color:var(--dimmer); }
+.case__facts dd{ font-size:1rem; color:var(--chrome-hi); }
+.case__note{
+  margin-top:clamp(2rem, 4vw, 3rem);
+  max-width:70ch; font-size:.9375rem; color:var(--dim);
+  border-left:2px solid var(--ax-x); padding-left:1rem;
+}
+
+/* ── the rest of the work ─────────────────────────────────────────────────
+   Three academic projects under the arena. Deliberately not cards: a rule
+   in the discipline's own colour, then the text. The stack line is mono
+   because it is data, and it is the last thing you read rather than the
+   first, because a client cares what it does before what it is made of. */
+.also{
+  margin-top:clamp(2.75rem, 5vw, 4.25rem);
+  padding-top:clamp(2rem, 4vw, 3rem);
+  border-top:1px solid var(--rail);
+}
+.also__h{ font-size:1rem; font-weight:600; color:var(--chrome-hi); margin-bottom:1.35rem; }
+.also__list{
+  list-style:none;
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:clamp(1.6rem, 3vw, 2.75rem);
+}
+.also__item{ border-top:2px solid var(--ch); padding-top:.95rem; }
+.also__item h4{ font-size:.9375rem; font-weight:600; line-height:1.3; color:var(--chrome-hi); }
+.also__item p{ margin-top:.6rem; font-size:.875rem; line-height:1.55; color:var(--dim); }
+.also__stack{ font-family:var(--mono); font-size:.6875rem; color:var(--dimmer); }
+
+/* ── the model shelf ──────────────────────────────────────────────────────
+   Each piece is a viewport with its title underneath, the way a drawing is
+   titled below the sheet rather than printed across it. The frame takes the
+   lighter --stage surface for the same reason the hero does: in a 3D
+   application the thing you are working on is brighter than the panels
+   around it, and this page has never pretended otherwise.
+
+   One model fills the width. Add a second and they pair up, a third and they
+   wrap — auto-fit handles the whole thing, so there is no media query here
+   and no number to change when the shelf grows. */
+.shelf{
+  list-style:none;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(min(100%, 27rem), 1fr));
+  gap:clamp(1.75rem, 3.5vw, 2.75rem);
+}
+.piece{ min-width:0; }
+
+.piece__frame{
+  position:relative;
+  aspect-ratio:16 / 10;
+  background:var(--stage);
+  border:1px solid var(--rail); border-radius:var(--r);
+  overflow:hidden;
+}
+.piece__canvas{
+  position:absolute; inset:0;
+  width:100%; height:100%; display:block;
+  /* A viewport in the middle of a page that swallows vertical swipes is a
+     trap on a phone. The page keeps up-and-down; the model takes sideways. */
+  touch-action:pan-y;
+  opacity:0; transition:opacity .3s ease;
+}
+.piece.is-live .piece__canvas{ opacity:1; }
+.piece__canvas:focus-visible{ outline:2px solid var(--select); outline-offset:-3px; }
+/* Only the 3D view answers a drag, so only the 3D view offers to be dragged.
+   A grab cursor over a locked elevation would be a promise the page breaks. */
+.piece[data-mode="3d"] .piece__canvas{ cursor:grab; }
+.piece[data-mode="3d"].is-turning .piece__canvas{ cursor:grabbing; }
+
+.piece__state{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  padding:1.5rem clamp(1.5rem, 9%, 3.5rem);
+  text-align:center; text-wrap:balance;
+  font-family:var(--mono); font-size:.75rem; line-height:1.65; color:var(--dimmer);
+}
+.piece.is-broken .piece__state{ color:var(--dim); }
+
+/* The chrome inside the frame only appears once there is something to be
+   chrome for — before that the frame is just a surface with a note on it. */
+.piece__hud{
+  position:absolute; z-index:2; top:.6rem; right:.6rem;
+  opacity:0; transition:opacity .25s ease;
+}
+.piece__cap{
+  position:absolute; z-index:2; left:.7rem; bottom:.6rem;
+  padding:.26rem .6rem;
+  background:rgba(20,22,25,.62); border-radius:100px;
+  font-family:var(--mono); font-size:.625rem; color:var(--dimmer);
+  pointer-events:none;
+  opacity:0; transition:opacity .25s ease;
+}
+.piece.is-live .piece__hud,
+.piece.is-live .piece__cap{ opacity:1; }
+.piece.is-broken .piece__hud{ display:none; }
+
+/* 3D on one side of a hairline, the three drawings on the other. The label
+   between them is what makes the grouping mean something: without it this is
+   four buttons, with it it is two ways of looking at the same file. */
+.modes{
+  display:flex; align-items:center; gap:1px;
+  padding:.25rem;
+  background:rgba(20,22,25,.74);
+  backdrop-filter:blur(9px);
+  border:1px solid var(--rail); border-radius:var(--r);
+}
+.modes__lbl{
+  align-self:stretch;
+  display:flex; align-items:center;
+  margin:0 .1rem 0 .35rem; padding-left:.5rem;
+  border-left:1px solid var(--rail);
+  font-family:var(--mono); font-size:.625rem; color:var(--dimmer);
+}
+.mode{
+  padding:.32rem .58rem;
+  background:transparent; border:0; border-radius:2px;
+  box-shadow:inset 0 -2px 0 transparent;
+  color:var(--dim);
+  font-family:var(--mono); font-size:.6875rem; line-height:1.25;
+  cursor:pointer;
+  transition:color .12s ease, background-color .12s ease, box-shadow .12s ease;
+}
+.mode:hover{ color:var(--chrome-hi); background:var(--stage-hi); }
+.mode.is-on{
+  color:var(--chrome-hi); background:var(--stage-hi);
+  box-shadow:inset 0 -2px 0 var(--select);
+}
+.mode:disabled{ opacity:.45; cursor:default; }
+.mode:disabled:hover{ color:var(--dim); background:transparent; }
+
+.piece__meta{ margin-top:1.2rem; padding-top:.95rem; border-top:2px solid var(--ch); }
+.piece__name{ font-size:1.0625rem; font-weight:600; line-height:1.3; color:var(--chrome-hi); }
+.piece__note{ margin-top:.55rem; max-width:58ch; font-size:.9375rem; line-height:1.55; color:var(--dim); }
+.piece__facts{
+  display:flex; flex-wrap:wrap; gap:.5rem clamp(1.25rem, 3vw, 2.25rem);
+  margin-top:1.05rem; padding-top:.8rem; border-top:1px solid var(--rail);
+}
+.piece__facts > div{ display:flex; align-items:baseline; gap:.5rem; }
+.piece__facts dt{ font-family:var(--mono); font-size:.625rem; color:var(--dimmer); }
+.piece__facts dd{ font-size:.875rem; color:var(--chrome); }
+
+.shelf__note{
+  margin-top:clamp(2rem, 4vw, 3rem);
+  max-width:70ch; font-size:.9375rem; color:var(--dim);
+  border-left:2px solid var(--ax-x); padding-left:1rem;
+}
+
+/* ── skills ───────────────────────────────────────────────────────────────
+   Four columns on the page's own taxonomy, and the same hairline-row list
+   the disciplines use, so this reads as more of the same document rather
+   than a widget bolted on. */
+.kit{
+  display:grid; grid-template-columns:repeat(4, 1fr);
+  gap:clamp(1.5rem, 3vw, 2.75rem);
+}
+.kit__grp{ border-top:2px solid var(--ch); padding-top:1rem; }
+.kit__h{ font-size:1rem; font-weight:600; color:var(--chrome-hi); }
+.kit__list{ list-style:none; margin-top:.9rem; border-top:1px solid var(--rail); }
+.kit__list li{
+  padding:.52rem 0; border-bottom:1px solid var(--rail);
+  font-size:.875rem; color:var(--chrome);
+}
+.kit__note{
+  margin-top:clamp(2.25rem, 4vw, 3.25rem);
+  max-width:74ch; font-size:.9375rem; color:var(--dim);
+  border-left:2px solid var(--ax-y); padding-left:1rem;
+}
+
+.link{
+  color:var(--chrome-hi); text-decoration:none;
+  border-bottom:1px solid var(--rail); padding-bottom:1px;
+  transition:border-color .12s ease;
+}
+.link:hover{ border-bottom-color:var(--select); }
+
+/* ── pipeline node graph ──────────────────────────────────────────────── */
+.graph{ position:relative; }
+.graph__wires{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
+.graph__wires path{ fill:none; stroke:var(--rail); stroke-width:1.25; transition:stroke .15s ease; }
+.graph__wires path.is-live{ stroke:var(--select); }
+.graph__nodes{
+  position:relative; z-index:1; list-style:none;
+  display:grid; grid-template-columns:repeat(5, 1fr);
+  gap:clamp(.9rem, 2.2vw, 2rem);
+}
+.node{
+  background:var(--void); border:1px solid var(--rail); border-top:2px solid var(--ch);
+  border-radius:var(--r);
+  padding:.95rem .9rem 1rem;
+  display:flex; flex-direction:column;
+  transition:border-color .15s ease, background-color .15s ease;
+}
+.node:hover{ background:var(--void-2); border-color:var(--rail); border-top-color:var(--ch); }
+.node__title{ font-size:1rem; font-weight:600; color:var(--chrome-hi); }
+.node__body{ margin-top:.45rem; font-size:.875rem; color:var(--dim); line-height:1.5; }
+.node__out{
+  margin-top:auto; padding-top:.9rem;
+  font-family:var(--mono); font-size:.6875rem; color:var(--dimmer);
+}
+.node__out::before{
+  content:""; display:block; height:1px; margin-bottom:.55rem;
+  background:repeating-linear-gradient(to right, var(--rail) 0 4px, transparent 4px 8px);
+}
+
+/* ── studio ─────────────────────────────────────────────────────────────
+   Bio on the left, identity rail on the right: a face above the credentials
+   it belongs to. The portrait is framed like every other panel on the page
+   — one hairline, one 3px radius — so it reads as part of the document
+   rather than a photo pasted onto it. */
+.studio{ display:grid; grid-template-columns:1fr 17rem; gap:clamp(2rem, 4vw, 3.5rem); align-items:start; }
+.studio__text p{ max-width:62ch; }
+.studio__text p + p{ margin-top:1.1rem; }
+
+/* a grid child defaults to min-width:auto, which lets a long unbroken spec
+   value push the rail wider than its track; this pins it to 17rem */
+.studio__side{ min-width:0; }
+
+.ident{ margin-bottom:1.75rem; }
+.ident__img{
+  display:block; width:100%; max-width:13rem;
+  /* the file is cut to 4:5, so cover crops nothing — the framing is in the JPEG */
+  aspect-ratio:4/5; object-fit:cover;
+  background:var(--stage);
+  border:1px solid var(--rail); border-radius:var(--r);
+}
+.ident__cap{
+  margin-top:.75rem; max-width:13rem;
+  font-family:var(--mono); font-size:.6875rem; line-height:1.5; color:var(--dimmer);
+}
+
+.specs{ border-top:1px solid var(--rail); }
+.specs dt{ padding-top:.7rem; font-size:.6875rem; color:var(--dimmer); }
+.specs dd{ padding-bottom:.7rem; border-bottom:1px solid var(--rail); font-size:.875rem; color:var(--chrome); }
+
+/* ── contact ──────────────────────────────────────────────────────────── */
+.calling{
+  font-size:clamp(2rem, 5.2vw, 3.6rem);
+  font-weight:600; font-stretch:108%;
+  letter-spacing:-.022em; line-height:1.02;
+  max-width:15ch; color:var(--chrome-hi);
+}
+.calling__sub{ margin-top:1.1rem; max-width:52ch; color:var(--dim); }
+.calling__mail{ margin-top:2.25rem; }
+.mail{
+  font-family:var(--mono);
+  font-size:clamp(1.05rem, 2.4vw, 1.7rem);
+  color:var(--chrome-hi); text-decoration:none;
+  border-bottom:1px solid var(--select); padding-bottom:.15rem;
+  transition:color .12s ease;
+}
+.mail:hover{ color:#fff; }
+.calling__note{ margin-top:1.5rem; max-width:52ch; font-size:.9375rem; color:var(--dimmer); }
+
+/* The résumé sits below the note as a file, not a button: name on the left,
+   format and weight on the right, the way a download reads in an application.
+   No amber — that belongs to the email above it, which is the primary action. */
+.cv{
+  display:flex; align-items:center; gap:1rem;
+  width:min(30rem, 100%); margin-top:2.25rem;
+  padding:.95rem 1.1rem;
+  background:var(--void-2); border:1px solid var(--rail); border-radius:var(--r);
+  text-decoration:none; color:var(--chrome-hi);
+  transition:background-color .14s ease, border-color .14s ease;
+}
+.cv:hover{ background:var(--stage); border-color:var(--stage-hi); }
+.cv__i{
+  flex:none; width:20px; height:20px;
+  fill:none; stroke:var(--dim); stroke-width:1.6;
+  stroke-linecap:round; stroke-linejoin:round;
+  transition:stroke .14s ease, transform .14s ease;
+}
+.cv:hover .cv__i{ stroke:var(--chrome-hi); transform:translateY(2px); }
+.cv__t{ flex:1 1 auto; font-size:.9375rem; font-weight:600; line-height:1.3; }
+.cv__s{ display:block; margin-top:.2rem; font-weight:400; font-size:.8125rem; color:var(--dimmer); }
+.cv__m{ flex:none; font-family:var(--mono); font-size:.6875rem; color:var(--dimmer); white-space:nowrap; }
+
+.elsewhere{ list-style:none; display:flex; flex-wrap:wrap; gap:1.4rem; margin-top:2.5rem; font-size:.875rem; }
+
+/* ── colophon ─────────────────────────────────────────────────────────── */
+.colophon{ border-top:1px solid var(--rail); padding:2.25rem 0 3rem; }
+.colophon__list{
+  display:grid; grid-template-columns:auto 1fr;
+  gap:.3rem 1.75rem; max-width:38rem; font-size:.75rem;
+}
+.colophon__list dt{ color:var(--dimmer); }
+.colophon__list dd{ color:var(--dim); }
+.colophon__rights{ margin-top:1.75rem; font-size:.75rem; color:var(--dimmer); }
+
+/* ── responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 1080px){
+  .graph__nodes{ grid-template-columns:repeat(2, 1fr); }
+  .graph__wires{ display:none; }
+  .kit{ grid-template-columns:repeat(2, 1fr); }
+  .also__list{ grid-template-columns:repeat(2, 1fr); }
+}
+@media (max-width: 900px){
+  .tabs{ display:none; }
+  .split{ grid-template-columns:1fr; gap:2.5rem; }
+  .case{ grid-template-columns:1fr; gap:2.5rem; }
+  .studio{ grid-template-columns:1fr; }
+  /* stacked, the portrait turns on its side and pairs with its caption, so
+     the rail still opens with a face instead of a tall column of photo */
+  .ident{ display:flex; align-items:center; gap:1.1rem; }
+  .ident__img{ width:7.5rem; }
+  .ident__cap{ margin-top:0; }
+}
+@media (max-width: 680px){
+  body{ font-size:1rem; }
+  .topbar{ grid-template-columns:auto 1fr; }
+  .topbar__status{ justify-self:end; font-size:.6875rem; }
+  /* the full stats row wraps into the headline on a narrow screen,
+     so keep the two that say something about the mesh and drop the rest */
+  .stats dt:nth-of-type(n+3), .stats dd:nth-of-type(n+3){ display:none; }
+  .stats dd{ margin-right:.8rem; }
+  .hud--br{ width:96px; height:96px; }
+
+  /* The rail becomes one scrolling strip under the bar. The caption goes —
+     the lit button already says which camera you are on — and the group
+     labels go with it, because Outside and Inside stay in DOM order. */
+  .views{
+    top:calc(var(--bar) + .5rem); left:.7rem; right:.7rem;
+    width:auto; max-height:none;
+    display:flex; align-items:center; gap:.25rem;
+    padding:.3rem;
+    overflow-x:auto; overflow-y:hidden;
+    scrollbar-width:none;
+  }
+  .views::-webkit-scrollbar{ display:none; }
+  .views__head, .views__lab{ display:none; }
+  .views__grp{ flex-direction:row; gap:.25rem; padding-top:0; }
+  .views__foot{ margin:0 0 0 .35rem; padding:0 0 0 .5rem; border-top:0; border-left:1px solid var(--rail); }
+  .view{ width:auto; padding:.3rem .55rem; box-shadow:none; }
+  .view.is-on{ box-shadow:inset 0 -2px 0 var(--select); }
+
+  .stage__load{ left:.7rem; right:.7rem; width:auto; top:calc(var(--bar) + 1rem); }
+  .hud--hint{ top:calc(var(--bar) + 3.6rem); bottom:auto; }
+  .hero{ bottom:3.75rem; width:calc(100% - 2.3rem); }
+  .hero__meta{ display:none; }
+  .stage__scrim{
+    background:linear-gradient(to top, rgba(23,25,28,.94) 12%, rgba(23,25,28,.55) 48%, rgba(23,25,28,0) 78%);
+  }
+  .graph__nodes{ grid-template-columns:1fr; }
+  .kit{ grid-template-columns:1fr; }
+  .also__list{ grid-template-columns:1fr; }
+  /* 16:10 leaves a 200px-tall frame on a phone, which is a letterbox rather
+     than a viewport. A squarer frame gives the building somewhere to stand. */
+  .piece__frame{ aspect-ratio:4 / 3; }
+}
+@media (max-width: 460px){
+  /* the name alone fills the bar at this width; availability is stated
+     again in the studio specs and above the contact address */
+  .topbar__status{ display:none; }
+  /* PDF · 48 KB drops under the label rather than squeezing it */
+  .cv{ flex-wrap:wrap; }
+  .cv__m{ flex-basis:100%; margin-left:calc(20px + 1rem); }
+  /* five controls across a 300px frame need the padding back */
+  .modes{ padding:.2rem; }
+  .mode{ padding:.3rem .42rem; }
+  .modes__lbl{ margin-left:.25rem; padding-left:.35rem; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+}
